@@ -41,7 +41,7 @@ const CompareScreen = () => {
 				const base64Person1 = await convertToBase64(person1)
 				const base64Person2 = await convertToBase64(person2)
 
-				const response = await fetch('https://slow-icons-appear.loca.lt/compare2', {
+				const response = await fetch('https://small-cloths-relate.loca.lt/compare2', {
 					method: 'POST',
 					headers: {
 						'Content-Type': 'application/json',
