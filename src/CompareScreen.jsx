@@ -10,20 +10,60 @@ const CompareScreen = () => {
 	const [loading, setLoading] = useState(false)
 	const [hasPermission, setHasPermission] = useState(null)
 
-	const pickImage = async (setPerson) => {
-		const { status } = await Camera.requestCameraPermissionsAsync()
-		setHasPermission(status === 'granted')
+	const selectPickType = ({ action }) => {
+		Alert.alert(
+			'Select Images',
+			'Pick from gallery or camera',
+			[
+				{
+					text: 'Take a picture',
+					onPress: async () => await pickImage({ action, type: 'camera' }),
+				},
+				{
+					text: 'Pick from gallery',
+					onPress: async () => {
+						await pickImage({ action, type: 'gallery' })
+					},
+				},
+				{
+					text: 'Close',
+					onPress: () => console.log('Cancel Pressed'),
+					style: 'cancel',
+				},
+			],
+			{
+				cancelable: true,
+			}
+		)
+	}
 
-		if (hasPermission) {
-			let result = await ImagePicker.launchCameraAsync({
+	const pickImage = async ({ action, type }) => {
+		let result
+
+		if (type == 'gallery') {
+			result = await ImagePicker.launchImageLibraryAsync({
 				mediaTypes: ImagePicker.MediaTypeOptions.Images,
 				allowsEditing: true,
 				aspect: [4, 3],
 				quality: 1,
 			})
-			if (!result.canceled) {
-				setPerson(result.assets[0].uri)
+		}
+
+		if (type == 'camera') {
+			const { status } = await Camera.requestCameraPermissionsAsync()
+			setHasPermission(status === 'granted')
+			if (hasPermission) {
+				result = await ImagePicker.launchCameraAsync({
+					mediaTypes: ImagePicker.MediaTypeOptions.Images,
+					allowsEditing: true,
+					aspect: [4, 3],
+					quality: 1,
+				})
 			}
+		}
+
+		if (!result.canceled) {
+			action(result.assets[0].uri)
 		}
 	}
 
@@ -68,61 +108,6 @@ const CompareScreen = () => {
 		}
 	}
 
-<<<<<<< HEAD
-        const response = await fetch('http://172.20.10.5:5000/compare2', {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-          },
-          body: JSON.stringify({
-            person1: base64Person1,
-            person2: base64Person2,
-          }),
-        });
-
-        if (response.ok) {
-          const data = await response.json();
-          Alert.alert('Success', `Response: ${JSON.stringify(data)}`);
-        } else {
-          Alert.alert('Error', 'Something went wrong!');
-        }
-      } catch (error) {
-        Alert.alert('Error', 'Something went wrong!');
-      }
-    }
-  };
-
-  return (
-    <SafeAreaView style={styles.container}>
-      <Text style={styles.title}>Who's your twin?</Text>
-      <Text style={styles.subtitle}>Upload images of two people and see how much they look alike</Text>
-      <View style={styles.imageContainer}>
-        <TouchableOpacity style={styles.imageBox} onPress={() => pickImage(setPerson1)}>
-          {person1 ? (
-            <Image source={{ uri: person1 }} style={styles.image} />
-          ) : (
-            <Text style={styles.uploadText}>Upload Picture</Text>
-          )}
-        </TouchableOpacity>
-        <TouchableOpacity style={styles.imageBox} onPress={() => pickImage(setPerson2)}>
-          {person2 ? (
-            <Image source={{ uri: person2 }} style={styles.image} />
-          ) : (
-            <Text style={styles.uploadText}>Upload Picture</Text>
-          )}
-        </TouchableOpacity>
-      </View>
-      <TouchableOpacity
-        style={[styles.button, { opacity: person1 && person2 ? 1 : 0.5 }]}
-        disabled={!person1 || !person2}
-        onPress={handleCalculate}
-      >
-        <Text style={styles.buttonText}>Calculate</Text>
-      </TouchableOpacity>
-    </SafeAreaView>
-  );
-};
-=======
 	return (
 		<SafeAreaView style={styles.container}>
 			<Text style={styles.title}>Who's your twin?</Text>
@@ -132,7 +117,7 @@ const CompareScreen = () => {
 			<View style={styles.imageContainer}>
 				<TouchableOpacity
 					style={styles.imageBox}
-					onPress={() => pickImage(setPerson1)}
+					onPress={() => selectPickType({ action: setPerson1 })}
 				>
 					{person1 ? (
 						<Image
@@ -145,7 +130,7 @@ const CompareScreen = () => {
 				</TouchableOpacity>
 				<TouchableOpacity
 					style={styles.imageBox}
-					onPress={() => pickImage(setPerson2)}
+					onPress={() => selectPickType({ action: setPerson2 })}
 				>
 					{person2 ? (
 						<Image
@@ -167,7 +152,6 @@ const CompareScreen = () => {
 		</SafeAreaView>
 	)
 }
->>>>>>> 5dc95093f3a0b2bfc75c39b8d06b1d3c9fdeac43
 
 const styles = StyleSheet.create({
 	container: {
