@@ -11,8 +11,8 @@ const HomeScreen = ({navigation}) => {
         <TouchableOpacity style={styles.button} onPress={() => navigation.navigate('SignUp')}>
           <Text style={styles.buttonText}>Sign up</Text>
         </TouchableOpacity>
-        <TouchableOpacity style={styles.button} onPress={() => navigation.navigate('Login')}>
-          <Text style={styles.buttonText}> Login </Text>
+        <TouchableOpacity style={styles.ghostButton} onPress={() => navigation.navigate('Login')}>
+          <Text style={styles.ghostButtonText}>Login</Text>
         </TouchableOpacity>
       </View>
     </SafeAreaView>
@@ -42,14 +42,27 @@ const styles = StyleSheet.create({
     marginBottom: 20,
   },
   button: {
-    backgroundColor: '#000',
+    backgroundColor: '#FFFAB8',
     paddingVertical: 20,
-    paddingHorizontal: 50,
-    borderRadius: 5,
+    paddingHorizontal: 80,
+    borderRadius: 15,
     marginBottom: 10,
   },
   buttonText: {
-    color: '#FFF',
+    color: '#000',
+    fontSize: 16,
+    textAlign: 'center',
+  },
+  ghostButton: {
+    paddingVertical: 20,
+    paddingHorizontal: 80,
+    borderRadius: 15,
+    borderColor: '#999',
+    borderWidth: 2,     
+    marginBottom: 10,
+  },
+  ghostButtonText: {
+    color: '#000', 
     fontSize: 16,
     textAlign: 'center',
   },
