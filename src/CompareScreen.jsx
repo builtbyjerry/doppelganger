@@ -61,36 +61,11 @@ const CompareScreen = () => {
 				}
 			} catch (error) {
 				console.log(error)
-				Alert.alert('Error', 'Something went horribly wrong!')
+				Alert.alert('Error', 'Yeeee, WTF Something went horribly wrong!')
 			} finally {
 				setLoading(false)
 			}
 		}
-	}
-
-<<<<<<< HEAD
-        const response = await fetch('http://172.20.10.5:5000/compare2', {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-          },
-          body: JSON.stringify({
-            person1: base64Person1,
-            person2: base64Person2,
-          }),
-        });
-
-        if (response.ok) {
-          const data = await response.json();
-          Alert.alert('Success', `Response: ${JSON.stringify(data)}`);
-        } else {
-          Alert.alert('Error', 'Something went wrong!');
-        }
-      } catch (error) {
-        Alert.alert('Error', 'Something went wrong!');
-      }
-    }
-  };
 
   return (
     <SafeAreaView style={styles.container}>
@@ -121,53 +96,7 @@ const CompareScreen = () => {
       </TouchableOpacity>
     </SafeAreaView>
   );
-};
-=======
-	return (
-		<SafeAreaView style={styles.container}>
-			<Text style={styles.title}>Who's your twin?</Text>
-			<Text style={styles.subtitle}>
-				Upload images of two people and see how much they look alike
-			</Text>
-			<View style={styles.imageContainer}>
-				<TouchableOpacity
-					style={styles.imageBox}
-					onPress={() => pickImage(setPerson1)}
-				>
-					{person1 ? (
-						<Image
-							source={{ uri: person1 }}
-							style={styles.image}
-						/>
-					) : (
-						<Text style={styles.uploadText}>Upload Picture</Text>
-					)}
-				</TouchableOpacity>
-				<TouchableOpacity
-					style={styles.imageBox}
-					onPress={() => pickImage(setPerson2)}
-				>
-					{person2 ? (
-						<Image
-							source={{ uri: person2 }}
-							style={styles.image}
-						/>
-					) : (
-						<Text style={styles.uploadText}>Upload Picture</Text>
-					)}
-				</TouchableOpacity>
-			</View>
-			<TouchableOpacity
-				style={[styles.button, { opacity: person1 && person2 ? 1 : 0.5 }]}
-				disabled={!person1 || !person2 || loading}
-				onPress={handleCalculate}
-			>
-				<Text style={styles.buttonText}>Calculat{loading ? 'ing' : 'e'}</Text>
-			</TouchableOpacity>
-		</SafeAreaView>
-	)
-}
->>>>>>> 5dc95093f3a0b2bfc75c39b8d06b1d3c9fdeac43
+}}
 
 const styles = StyleSheet.create({
 	container: {
