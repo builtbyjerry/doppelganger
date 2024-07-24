@@ -96,7 +96,6 @@ const CompareScreen = () => {
 					const data = await response.json()
 					Alert.alert('Success', `Response: ${JSON.stringify(data)}`)
 				} else {
-					console.log(await response.text())
 					Alert.alert('Error', `${response.body}`)
 				}
 			} catch (error) {
