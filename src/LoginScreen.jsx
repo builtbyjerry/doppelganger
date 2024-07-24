@@ -5,7 +5,7 @@ const LoginScreen = ({navigation}) => {
   return (
     <SafeAreaView style={styles.container}>
       <View style={styles.box}>
-        <Text style={styles.text}>Welcome back!!!!</Text>
+        <Text style={styles.text}>Welcome {'\n'}back!!!! {'\n'}🤪🤪🤪</Text>
         <TouchableOpacity style={styles.button} onPress={() => navigation.navigate('Compare')}>
           <Text style={styles.buttonText}>Log in NOW!!!😡</Text>
         </TouchableOpacity>
@@ -32,16 +32,15 @@ const styles = StyleSheet.create({
   text: {
     fontSize: 30,
     textAlign: 'center',
-    marginBottom: 50,
+    marginBottom: 30,
   },
   button: {
-    backgroundColor: '#000',
+    backgroundColor: '#FFFAB8',
     paddingVertical: 15,
     paddingHorizontal: 30,
     borderRadius: 5,
   },
   buttonText: {
-    color: '#FFF',
     fontSize: 16,
     textAlign: 'center',
   },
