@@ -1,45 +1,50 @@
 import React, { useState, useEffect } from 'react';
-import { SafeAreaView, View, Text, StyleSheet, TouchableOpacity, Alert } from 'react-native';
-import { Camera } from 'expo-camera';
+import { SafeAreaView, View, Text, StyleSheet, TouchableOpacity, Alert, ActivityIndicator } from 'react-native';
+import  Camera  from 'expo-camera';
 import * as FileSystem from 'expo-file-system';
 
 const FaceScanScreen = () => {
   const [hasPermission, setHasPermission] = useState(null);
   const [cameraRef, setCameraRef] = useState(null);
-  const [isScanned, setIsScanned] = useState(false);
+  const [loading, setLoading] = useState(false);
 
   useEffect(() => {
     (async () => {
-      const { status } = await Camera.requestPermissionsAsync();
+      const { status } = await Camera.requestCameraPermissionsAsync();
       setHasPermission(status === 'granted');
     })();
   }, []);
 
-  const handleScanFace = async () => {
+  const handleTakePicture = async () => {
     if (cameraRef) {
+      setLoading(true);
       const photo = await cameraRef.takePictureAsync({ quality: 1, base64: true });
-      setIsScanned(true);
+      await savePictureToDatabase(photo.base64);
+      setLoading(false);
+    }
+  };
 
-      try {
-        const response = await fetch('', {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-          },
-          body: JSON.stringify({ image: photo.base64 }),
-        });
+  const savePictureToDatabase = async (base64Image) => {
+    try {
+      const response = await fetch('https://your-backend-url.com/saveImage', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          image: base64Image,
+        }),
+      });
 
-        if (response.ok) {
-          const data = await response.json();
-          Alert.alert('Success', 'Image saved successfully!');
-        } else {
-          Alert.alert('Error', 'Failed to save the image!');
-        }
-      } catch (error) {
-        Alert.alert('Error', 'Something went wrong!');
+      if (response.ok) {
+        Alert.alert('Success', 'Picture saved successfully!');
+      } else {
+        console.log(await response.text());
+        Alert.alert('Error', 'Failed to save picture.');
       }
-
-      setIsScanned(false);
+    } catch (error) {
+      console.log(error);
+      Alert.alert('Error', 'Something went wrong!');
     }
   };
 
@@ -53,22 +58,18 @@ const FaceScanScreen = () => {
 
   return (
     <SafeAreaView style={styles.container}>
-      <Text style={styles.title}>Face Scan</Text>
-      <Camera
-        style={styles.camera}
-        type={Camera.Constants.Type.front}
-        ref={(ref) => setCameraRef(ref)}
-      >
-        <View style={styles.buttonContainer}>
-          <TouchableOpacity
-            style={styles.button}
-            onPress={handleScanFace}
-            disabled={isScanned}
-          >
-            <Text style={styles.buttonText}>{isScanned ? 'Scanning...' : 'Scan Face'}</Text>
-          </TouchableOpacity>
-        </View>
-      </Camera>
+      <Text style={styles.mainTitle}>Doppelgänger Detective🕵🏿‍♂️</Text>
+      <Text style={styles.title}>Scan your face to save it in the database</Text>
+      <View style={styles.cameraContainer}>
+        <Camera style={styles.camera} ref={setCameraRef} />
+      </View>
+      <TouchableOpacity style={styles.button} onPress={handleTakePicture}>
+        {loading ? (
+          <ActivityIndicator color="#FFF" />
+        ) : (
+          <Text style={styles.buttonText}>Take Picture</Text>
+        )}
+      </TouchableOpacity>
     </SafeAreaView>
   );
 };
@@ -76,33 +77,37 @@ const FaceScanScreen = () => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
     backgroundColor: '#FFFAB8',
   },
-  title: {
-    fontSize: 24,
+  mainTitle: {
+    fontSize: 30,
     fontWeight: 'bold',
+    textAlign: 'center',
+    marginTop: 20,
+    marginBottom: 10,
+  },
+  title: {
+    fontSize: 18,
     textAlign: 'center',
     marginBottom: 20,
   },
-  camera: {
+  cameraContainer: {
     flex: 1,
-    width: '100%',
+    justifyContent: 'center',
+    alignItems: 'center',
+    marginBottom: 20,
   },
-  buttonContainer: {
-    flex: 1,
-    backgroundColor: 'transparent',
-    flexDirection: 'row',
-    margin: 20,
+  camera: {
+    width: '90%',
+    height: '70%',
+    borderRadius: 10,
   },
   button: {
-    flex: 1,
-    alignSelf: 'flex-end',
-    alignItems: 'center',
     backgroundColor: '#000',
     paddingVertical: 15,
-    borderRadius: 5,
+    paddingHorizontal: 70,
+    borderRadius: 15,
+    alignSelf: 'center',
     marginBottom: 20,
   },
   buttonText: {
