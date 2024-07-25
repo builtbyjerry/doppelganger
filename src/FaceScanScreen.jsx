@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useRef } from 'react'
 import { SafeAreaView, View, Text, StyleSheet, TouchableOpacity, Alert } from 'react-native'
 import { Camera, CameraType, CameraView } from 'expo-camera'
+import { ENDPOINT, SIGNUP_ENDPOINT } from '../constants'
 
 const FaceScanScreen = () => {
 	const [hasPermission, setHasPermission] = useState(null)
@@ -19,24 +20,27 @@ const FaceScanScreen = () => {
 			setIsScanned(true)
 
 			try {
+				/**
+				 * @type {{base64: string}}
+				 */
 				const photo = await cameraRef.current.takePictureAsync({ quality: 1, base64: true })
-				const imageData = photo.base64
+				const imageData = photo.base64.replaceAll(' ', '+')
 
-				const response = await fetch('https://your-backend-endpoint.com/upload', {
+				const response = await fetch(SIGNUP_ENDPOINT, {
 					method: 'POST',
 					headers: {
 						'Content-Type': 'application/json',
 					},
-					body: JSON.stringify({ image: imageData }),
+					body: JSON.stringify({ person: imageData }),
 				})
 
 				if (response.ok) {
-					const data = await response.json()
 					Alert.alert('Success', 'Image saved successfully!')
 				} else {
 					Alert.alert('Error', 'Failed to save the image!')
 				}
 			} catch (error) {
+				console.log(error)
 				Alert.alert('Error', 'Something went wrong!')
 			}
 
