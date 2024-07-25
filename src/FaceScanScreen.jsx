@@ -1,32 +1,33 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { SafeAreaView, View, Text, StyleSheet, TouchableOpacity, Alert } from 'react-native';
-import { Camera } from 'expo-camera';
-import * as FileSystem from 'expo-file-system';
+import { Camera, CameraType } from 'expo-camera';
 
 const FaceScanScreen = () => {
   const [hasPermission, setHasPermission] = useState(null);
-  const [cameraRef, setCameraRef] = useState(null);
+  const cameraRef = useRef(null);
   const [isScanned, setIsScanned] = useState(false);
 
   useEffect(() => {
     (async () => {
-      const { status } = await Camera.requestPermissionsAsync();
+      const { status } = await Camera.requestCameraPermissionsAsync();
       setHasPermission(status === 'granted');
     })();
   }, []);
 
   const handleScanFace = async () => {
-    if (cameraRef) {
-      const photo = await cameraRef.takePictureAsync({ quality: 1, base64: true });
+    if (cameraRef.current) {
       setIsScanned(true);
 
       try {
-        const response = await fetch('', {
+        const photo = await cameraRef.current.takePictureAsync({ quality: 1, base64: true });
+        const imageData = photo.base64;
+
+        const response = await fetch('https://your-backend-endpoint.com/upload', {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',
           },
-          body: JSON.stringify({ image: photo.base64 }),
+          body: JSON.stringify({ image: imageData }),
         });
 
         if (response.ok) {
@@ -56,8 +57,8 @@ const FaceScanScreen = () => {
       <Text style={styles.title}>Face Scan</Text>
       <Camera
         style={styles.camera}
-        type={Camera.Constants.Type.front}
-        ref={(ref) => setCameraRef(ref)}
+        type={CameraType.front}
+        ref={(ref) => cameraRef(ref)}
       >
         <View style={styles.buttonContainer}>
           <TouchableOpacity
