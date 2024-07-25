@@ -83,7 +83,7 @@ const CompareScreen = () => {
 				const base64Person1 = await convertToBase64(person1)
 				const base64Person2 = await convertToBase64(person2)
 
-				const response = await fetch('https://7431-102-219-153-68.ngrok-free.app/compare2', {
+				const response = await fetch('https://5674-102-219-153-68.ngrok-free.app/compare2', {
 					method: 'POST',
 					headers: {
 						'Content-Type': 'application/json',
