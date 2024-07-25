@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useRef } from 'react'
 import { SafeAreaView, View, Text, StyleSheet, TouchableOpacity,Modal } from 'react-native'
 import { Camera, CameraType, CameraView } from 'expo-camera'
+import { ENDPOINT, SIGNUP_ENDPOINT } from '../constants'
 import { CheckCircle, Frown } from 'lucide-react-native';
 
 const FaceScanScreen = () => {
@@ -23,9 +24,12 @@ const FaceScanScreen = () => {
     if (cameraRef.current) {
       setIsScanned(true)
 
-      try {
-        const photo = await cameraRef.current.takePictureAsync({ person: 1, base64: true })
-        const imageData = photo.base64
+			try {
+				/**
+				 * @type {{base64: string}}
+				 */
+				const photo = await cameraRef.current.takePictureAsync({ quality: 1, base64: true })
+				const imageData = photo.base64.replaceAll(' ', '+')
 
         const response = await fetch('https://5674-102-219-153-68.ngrok-free.app/register', {
           method: 'POST',

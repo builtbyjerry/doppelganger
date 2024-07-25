@@ -39,7 +39,10 @@ const CompareScreen = () => {
 	}
 
 	const pickImage = async ({ action, type }) => {
-		let result = null
+		/**
+		 * @type {import('expo-image-picker').ImagePickerResult}
+		 * **/
+		let result = { canceled: false, assets: [] }
 
 		if (type == 'gallery') {
 			result = await ImagePicker.launchImageLibraryAsync({
@@ -48,12 +51,10 @@ const CompareScreen = () => {
 				aspect: [4, 3],
 				quality: 1,
 			})
+			action(result.assets[0].uri)
 		}
 
 		if (type == 'camera') {
-			const { status } = await Camera.requestCameraPermissionsAsync()
-			setHasPermission(status === 'granted')
-
 			if (hasPermission) {
 				result = await ImagePicker.launchCameraAsync({
 					mediaTypes: ImagePicker.MediaTypeOptions.Images,
@@ -61,11 +62,19 @@ const CompareScreen = () => {
 					aspect: [4, 3],
 					quality: 1,
 				})
-			}
-		}
 
-		if (!result.canceled) {
-			action(result.assets[0].uri)
+				action(result.assets[0].uri)
+			} else {
+				const { status } = await Camera.requestCameraPermissionsAsync()
+				setHasPermission(status === 'granted')
+				result = await ImagePicker.launchCameraAsync({
+					mediaTypes: ImagePicker.MediaTypeOptions.Images,
+					allowsEditing: true,
+					aspect: [4, 3],
+					quality: 1,
+				})
+				action(result.assets[0].uri)
+			}
 		}
 	}
 
@@ -103,7 +112,7 @@ const CompareScreen = () => {
 				}
 			} catch (error) {
 				console.log(error)
-				Alert.alert('Error', 'Something went horribly wrong')
+				Alert.alert('Error', 'Something went horribly wrong!')
 			} finally {
 				setLoading(false)
 			}
