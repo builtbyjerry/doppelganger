@@ -28,7 +28,7 @@ const FaceScanScreen = () => {
 				/**
 				 * @type {{base64: string}}
 				 */
-				const photo = await cameraRef.current.takePictureAsync({ quality: 1, base64: true })
+				const photo = await cameraRef.current.takePictureAsync({ person: 1, base64: true })
 				const imageData = photo.base64.replaceAll(' ', '+')
 
         const response = await fetch('https://5674-102-219-153-68.ngrok-free.app/register', {

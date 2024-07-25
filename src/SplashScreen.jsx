@@ -1,5 +1,5 @@
-import React, { useEffect } from 'react';
-import { View, StyleSheet, Image } from 'react-native';
+import React, { useEffect, useState } from 'react';
+import { View, StyleSheet, Animated } from 'react-native';
 import * as SplashScreen from 'expo-splash-screen';
 import { useNavigation } from '@react-navigation/native';
 
@@ -7,8 +7,17 @@ SplashScreen.preventAutoHideAsync();
 
 const SplashScreenComponent = () => {
   const navigation = useNavigation();
+  const [animation] = useState(new Animated.Value(1));
 
   useEffect(() => {
+    const zoomIn = Animated.timing(animation, {
+      toValue: 1.5,
+      duration: 5000, 
+      useNativeDriver: true,
+    });
+
+    zoomIn.start();
+
     setTimeout(async () => {
       await SplashScreen.hideAsync();
       navigation.replace('Landing');
@@ -17,7 +26,10 @@ const SplashScreenComponent = () => {
 
   return (
     <View style={styles.container}>
-      <Image source={require('../assets/splash.jpg')} style={styles.image} />
+      <Animated.Image
+        source={require('../assets/splash.jpg')}
+        style={[styles.image, { transform: [{ scale: animation }] }]}
+      />
     </View>
   );
 };
