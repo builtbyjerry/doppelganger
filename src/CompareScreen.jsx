@@ -106,12 +106,14 @@ const CompareScreen = () => {
 				})
 
 				if (response.ok) {
-					const data = await response.json()
-					console.log(data)
-					if (data) {
-						navigation.navigate('Success', {params: {data}  })
-					}
-					else {
+					const apiResponse = await response.json()
+					if (apiResponse.data) {
+						navigation.navigate('Success', { 
+							data: apiResponse.data, 
+							person1,
+							person2
+						})
+					} else {
 						Alert.alert('Oh chim', 'The similarity percentage is missing')
 					}
 				} else {

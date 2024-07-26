@@ -9,6 +9,7 @@ import LoginScreen from './src/LoginScreen'
 import CompareScreen from './src/CompareScreen'
 import FaceScanScreen from './src/FaceScanScreen'
 import SuccessScreen from './src/SuccessScreen'
+import LoginScanScreen from './src/LoginScanScreen'
 const Stack = createNativeStackNavigator()
 
 const App = () => {
@@ -41,6 +42,12 @@ const App = () => {
 					options={{ headerShown: false }}
 				/>
 				<Stack.Screen
+					name='LoginScan'
+					component={LoginScanScreen}
+					options={{ headerShown: false }}
+				/>
+
+				<Stack.Screen
 					name='Compare'
 					component={CompareScreen}
 					options={{ headerShown: false }}
@@ -48,11 +55,12 @@ const App = () => {
 				<Stack.Screen
 					name='FaceScan'
 					component={FaceScanScreen}
+					options={{headerShown: false}}
 				/>
 				<Stack.Screen
 					name='Success'
 					component={SuccessScreen}
-					options={{modal: true}}
+					options={{modal: true, headerShown: false}}
 				/>
 			</Stack.Navigator>
 		</NavigationContainer>

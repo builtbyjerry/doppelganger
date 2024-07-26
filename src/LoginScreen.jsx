@@ -6,7 +6,7 @@ const LoginScreen = ({navigation}) => {
     <SafeAreaView style={styles.container}>
       <View style={styles.box}>
         <Text style={styles.text}>Welcome {'\n'}back!!!! {'\n'}🤪🤪🤪</Text>
-        <TouchableOpacity style={styles.button} onPress={() => navigation.navigate('Compare')}>
+        <TouchableOpacity style={styles.button} onPress={() => navigation.navigate('LoginScan')}>
           <Text style={styles.buttonText}>Log in NOW!!!😡</Text>
         </TouchableOpacity>
       </View>
