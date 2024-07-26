@@ -8,6 +8,7 @@ import SignUpScreen from './src/SignUpScreen'
 import LoginScreen from './src/LoginScreen'
 import CompareScreen from './src/CompareScreen'
 import FaceScanScreen from './src/FaceScanScreen'
+import SuccessScreen from './src/SuccessScreen'
 const Stack = createNativeStackNavigator()
 
 const App = () => {
@@ -47,6 +48,11 @@ const App = () => {
 				<Stack.Screen
 					name='FaceScan'
 					component={FaceScanScreen}
+				/>
+				<Stack.Screen
+					name='Success'
+					component={SuccessScreen}
+					options={{modal: true}}
 				/>
 			</Stack.Navigator>
 		</NavigationContainer>
