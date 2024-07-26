@@ -12,7 +12,7 @@ const SplashScreenComponent = () => {
   useEffect(() => {
     const zoomIn = Animated.timing(animation, {
       toValue: 1.5,
-      duration: 5000, 
+      duration: 3000, 
       useNativeDriver: true,
     });
 
@@ -21,7 +21,7 @@ const SplashScreenComponent = () => {
     setTimeout(async () => {
       await SplashScreen.hideAsync();
       navigation.replace('Landing');
-    }, 5000); 
+    }, 3000); 
   }, []);
 
   return (
