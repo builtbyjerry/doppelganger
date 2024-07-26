@@ -1,78 +1,118 @@
-import React, { useState, useEffect } from 'react';
-import { SafeAreaView, View, Text, StyleSheet, TouchableOpacity, Alert } from 'react-native';
-import { Camera } from 'expo-camera';
-import * as FileSystem from 'expo-file-system';
+import React, { useState, useEffect, useRef } from 'react'
+import { SafeAreaView, View, Text, StyleSheet, TouchableOpacity,Modal } from 'react-native'
+import { Camera, CameraType, CameraView } from 'expo-camera'
+import { ENDPOINT, SIGNUP_ENDPOINT } from '../constants'
+import { CheckCircle, Frown } from 'lucide-react-native';
 
 const FaceScanScreen = () => {
-  const [hasPermission, setHasPermission] = useState(null);
-  const [cameraRef, setCameraRef] = useState(null);
-  const [isScanned, setIsScanned] = useState(false);
+  const [hasPermission, setHasPermission] = useState(null)
+  const cameraRef = useRef(null)
+  const [isScanned, setIsScanned] = useState(false)
+  const [modalVisible, setModalVisible] = useState(false);
+  const [modalMessage, setModalMessage] = useState('');
+  const [isSuccess, setIsSuccess] = useState(false);
+
 
   useEffect(() => {
-    (async () => {
-      const { status } = await Camera.requestPermissionsAsync();
-      setHasPermission(status === 'granted');
-    })();
-  }, []);
+    ;(async () => {
+      const { status } = await Camera.requestCameraPermissionsAsync()
+      setHasPermission(status === 'granted')
+    })()
+  }, [])
 
   const handleScanFace = async () => {
-    if (cameraRef) {
-      const photo = await cameraRef.takePictureAsync({ quality: 1, base64: true });
-      setIsScanned(true);
+    if (cameraRef.current) {
+      setIsScanned(true)
 
-      try {
-        const response = await fetch('', {
+			try {
+				/**
+				 * @type {{base64: string}}
+				 */
+				const photo = await cameraRef.current.takePictureAsync({ person: 1, base64: true })
+				const imageData = photo.base64.replaceAll(' ', '+')
+
+        const response = await fetch('https://5674-102-219-153-68.ngrok-free.app/register', {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',
           },
-          body: JSON.stringify({ image: photo.base64 }),
-        });
+          body: JSON.stringify({ image: imageData }),
+        })
 
         if (response.ok) {
-          const data = await response.json();
-          Alert.alert('Success', 'Image saved successfully!');
+          setIsSuccess(true);
+          setModalMessage('Your face has been saved.');
         } else {
-          Alert.alert('Error', 'Failed to save the image!');
+          setIsSuccess(false);
+          setModalMessage('Ensure your face is visible and try again.');
         }
       } catch (error) {
-        Alert.alert('Error', 'Something went wrong!');
+        setIsSuccess(false);
+        setModalMessage('Something went wrong!');
+      } finally {
+        setModalVisible(true);
+        setIsScanned(false);
       }
-
-      setIsScanned(false);
     }
   };
 
   if (hasPermission === null) {
-    return <View />;
+    return <View />
   }
 
   if (hasPermission === false) {
-    return <Text>No access to camera</Text>;
+    return <Text>No access to camera</Text>
   }
 
   return (
     <SafeAreaView style={styles.container}>
-      <Text style={styles.title}>Face Scan</Text>
-      <Camera
+      <Text style={styles.instructionText}>Take a clear picture of your face</Text>
+      <CameraView
         style={styles.camera}
-        type={Camera.Constants.Type.front}
-        ref={(ref) => setCameraRef(ref)}
+        facing='front'
+        ref={cameraRef}
+      />
+      <View style={styles.buttonContainer}>
+        <TouchableOpacity
+          style={styles.button}
+          onPress={handleScanFace}
+          disabled={isScanned}
+        >
+          <Text style={styles.buttonText}>{isScanned ? 'Submitting...' : 'Submit Image'}</Text>
+        </TouchableOpacity>
+      </View>
+      <Modal
+        animationType="slide"
+        transparent={true}
+        visible={modalVisible}
+        onRequestClose={() => {
+          setModalVisible(!modalVisible);
+        }}
       >
-        <View style={styles.buttonContainer}>
-          <TouchableOpacity
-            style={styles.button}
-            onPress={handleScanFace}
-            disabled={isScanned}
-          >
-            <Text style={styles.buttonText}>{isScanned ? 'Scanning...' : 'Scan Face'}</Text>
-          </TouchableOpacity>
+        <View style={styles.modalContainer}>
+          <View style={styles.modalView}>
+            {isSuccess ? (
+              <CheckCircle size={50} color="green" style={styles.icon} />
+            ) : (
+              <Frown size={50} color="red" style={styles.icon} />
+            )}
+            <Text style={styles.modalText}>{modalMessage}</Text>
+            <TouchableOpacity
+              style={styles.modalButton}
+              onPress={() => {
+                setModalVisible(!modalVisible);
+              }}
+            >
+              <Text style={styles.modalButtonText}>
+                {isSuccess ? 'Sign Up' : 'Click here to try again'}
+              </Text>
+            </TouchableOpacity>
+          </View>
         </View>
-      </Camera>
+      </Modal>
     </SafeAreaView>
   );
 };
-
 const styles = StyleSheet.create({
   container: {
     flex: 1,
@@ -80,36 +120,65 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     backgroundColor: '#FFFAB8',
   },
-  title: {
-    fontSize: 24,
+  instructionText: {
+    fontSize: 18,
     fontWeight: 'bold',
     textAlign: 'center',
-    marginBottom: 20,
+    marginBottom: 10,
   },
   camera: {
-    flex: 1,
+    height: '55%',
     width: '100%',
   },
   buttonContainer: {
-    flex: 1,
-    backgroundColor: 'transparent',
-    flexDirection: 'row',
-    margin: 20,
+    width: '100%',
+    alignItems: 'center',
+    marginTop: 20,
   },
   button: {
-    flex: 1,
-    alignSelf: 'flex-end',
     alignItems: 'center',
-    backgroundColor: '#000',
-    paddingVertical: 15,
-    borderRadius: 5,
-    marginBottom: 20,
+    backgroundColor: '#fff',
+    paddingVertical: 20,
+    paddingHorizontal: 30,
+    borderRadius: 15,
   },
   buttonText: {
-    color: '#FFF',
     fontSize: 16,
     textAlign: 'center',
   },
-});
+  modalContainer: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  modalView: {
+    width: '80%',
+    height: '35%',
+    backgroundColor: '#FFFFFF',
+    borderRadius: 10,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  icon: {
+    marginBottom: 20,
+    backgroundColor: '#FFFAB8',
+  },
+  modalText: {
+    fontSize: 30,
+    textAlign: 'center',
+    marginBottom: 30,
+  },
+  modalButton: {
+    backgroundColor: '#FFFAB8', 
+    paddingVertical: 15,
+    paddingHorizontal: 30,
+    borderRadius: 5,
+  },
+  modalButtonText: {
+   color: '#000',
+    fontSize: 16,
+    textAlign: 'center',
+  },
+})
 
-export default FaceScanScreen;
+export default FaceScanScreen
