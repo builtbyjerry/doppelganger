@@ -3,6 +3,7 @@ import { SafeAreaView, View, Text, StyleSheet, TouchableOpacity,Modal } from 're
 import { Camera, CameraType, CameraView } from 'expo-camera'
 import { ENDPOINT, SIGNUP_ENDPOINT } from '../constants'
 import { CheckCircle, Frown } from 'lucide-react-native';
+import { useNavigation } from '@react-navigation/native';
 
 const FaceScanScreen = () => {
   const [hasPermission, setHasPermission] = useState(null)
@@ -11,6 +12,7 @@ const FaceScanScreen = () => {
   const [modalVisible, setModalVisible] = useState(false);
   const [modalMessage, setModalMessage] = useState('');
   const [isSuccess, setIsSuccess] = useState(false);
+  const navigator = useNavigation()
 
 
   useEffect(() => {
@@ -31,12 +33,12 @@ const FaceScanScreen = () => {
 				const photo = await cameraRef.current.takePictureAsync({ person: 1, base64: true })
 				const imageData = photo.base64.replaceAll(' ', '+')
 
-        const response = await fetch('https://5674-102-219-153-68.ngrok-free.app/register', {
+        const response = await fetch( SIGNUP_ENDPOINT, {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',
           },
-          body: JSON.stringify({ image: imageData }),
+          body: JSON.stringify({ person: imageData }),
         })
 
         if (response.ok) {
@@ -101,10 +103,14 @@ const FaceScanScreen = () => {
               style={styles.modalButton}
               onPress={() => {
                 setModalVisible(!modalVisible);
+
+                if (isSuccess) {
+                  navigator.navigate('Compare')
+                }
               }}
             >
               <Text style={styles.modalButtonText}>
-                {isSuccess ? 'Sign Up' : 'Click here to try again'}
+                {isSuccess ? "Let's see who's your twin 😝" : 'Click here to try again'}
               </Text>
             </TouchableOpacity>
           </View>

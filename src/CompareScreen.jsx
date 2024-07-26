@@ -4,12 +4,14 @@ import * as ImagePicker from 'expo-image-picker'
 import * as FileSystem from 'expo-file-system'
 import { Camera } from 'expo-camera'
 import { Upload } from 'lucide-react-native'
+import { useNavigation } from '@react-navigation/native';
 
 const CompareScreen = () => {
 	const [person1, setPerson1] = useState(null)
 	const [person2, setPerson2] = useState(null)
 	const [loading, setLoading] = useState(false)
 	const [hasPermission, setHasPermission] = useState(null)
+	const navigation = useNavigation()
 
 	const selectPickType = ({ action }) => {
 		Alert.alert(
@@ -104,11 +106,19 @@ const CompareScreen = () => {
 				})
 
 				if (response.ok) {
-					const data = await response.json()
-					Alert.alert('Success', `Response: ${JSON.stringify(data)}`)
+					const apiResponse = await response.json()
+					if (apiResponse.data) {
+						navigation.navigate('Success', { 
+							data: apiResponse.data, 
+							person1,
+							person2
+						})
+					} else {
+						Alert.alert('Oh chim', 'The similarity percentage is missing')
+					}
 				} else {
 					console.log(await response.text())
-					Alert.alert('Error', `${response.body}`)
+					Alert.alert('Failure', 'Not similar')
 				}
 			} catch (error) {
 				console.log(error)
