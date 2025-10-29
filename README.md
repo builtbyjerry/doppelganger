@@ -35,18 +35,22 @@ Specifically contributed to:
 
 **1. Compare Screen**  
 _User selects or uploads two images to compare_  
-![Compare Screen](./screens/compare-screen-alike=true.png)
-![Compare Screen](./screens/compare-screen-alike=false.jpg)
+
+<img src="./screens/compare-screen-alike=false.jpg" width="250" />                      <img src="./screens/compare-screen-alike=true.png" width="300" />
 
 
 ---
 
 **2A. Result — No Match Found**  
 _Shows low similarity with a playful response_  
-![Result Not Similar](./screens/success-screen-alike=false.jpg)
+
+
+<img src="./screens/success-screen-alike=false.jpg" width="300" />
 
 **2B. Result — Strong Match**  
 _Shows high similarity with celebration feedback_  
-![Result Similar](./screens/success-screen-alike=true.png)
+
+
+<img src="./screens/success-screen-alike=true.png" width="300" />
 
 
